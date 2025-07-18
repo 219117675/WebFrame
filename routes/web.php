@@ -1,41 +1,26 @@
 <?php
 
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TaskController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('index');
+    return view('dashboard'); // or 'dashboard' if you want to redirect logged users immediately
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-Route::get('/about', function () {
-    return view('about');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::resource('tasks', TaskController::class);
+    Route::put('/tasks/{task}/complete', [TaskController::class, 'markComplete'])->name('tasks.complete');
+
 });
 
-//Route::get('/index', function () {
-  //  return view('index');
-//});
-
-Route::get('/register', function () {
-    return view('register');
-});
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-});
-
-Route::get('/contact', function () {
-    return view('contact');
-});
-
-Route::get('/event', function () {
-    return view('event');
-});
-
-Route::get('/confirmation', function () {
-    return view('confirmation');
-});
-
-Route::get('/login', function () {
-    return view('login');
-});
+// Auth routes (login, register, etc.) provided by Breeze or your auth scaffolding
+require __DIR__.'/auth.php';
 
